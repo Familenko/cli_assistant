@@ -40,13 +40,17 @@ class Record:
         self.birthday = None
 
     def add_email(self, email):
-        pass
+        self.emails.append(email)
 
-    def edit_email(self, email):
-        pass
+    def edit_email(self, old_email, new_email):
+        for i, email in enumerate(self.emails):
+            if email == old_email:
+                self.emails[i] = new_email
+                return
+        raise ValueError("Old email not found")
 
     def delete_email(self, email):
-        pass
+        self.emails = [e for e in self.emails if e != email]
 
     def add_notes(self, notes):
         pass
