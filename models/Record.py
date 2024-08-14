@@ -1,4 +1,6 @@
 from models.Name import Name
+from models.Phone import Phone
+from models.Birthday import Birthday
 
 
 class Record:
@@ -10,22 +12,32 @@ class Record:
         self.notes = []
 
     def add_phone(self, phone):
-        pass
+        self.phones.append(Phone(phone))
 
-    def edit_phone(self, phone):
-        pass
+    def edit_phone(self, old_phone, new_phone):
+        for phone in self.phones:
+            if phone.number == old_phone:
+                phone.number = new_phone
+                return
+        raise ValueError("Old phone number not found")
 
     def delete_phone(self, phone):
-        pass
+        self.phones = [p for p in self.phones if p.value != phone]
 
     def add_birthday(self, birthday):
-        pass
+        if self.birthday:
+            raise ValueError("Birthday already exists")
+        self.birthday = Birthday(birthday)
 
-    def edit_birthday(self, birthday):
-        pass
+    def edit_birthday(self, new_birthday):
+        if not self.birthday:
+            raise ValueError("Birthday does not exist")
+        self.birthday = Birthday(new_birthday)
 
-    def delete_birthday(self, birthday):
-        pass
+    def delete_birthday(self):
+        if not self.birthday:
+            raise ValueError("Birthday does not exist")
+        self.birthday = None
 
     def add_email(self, email):
         pass
