@@ -1,6 +1,7 @@
 class ChatBot:
     def __init__(self):
-        pass
+        self.commands = {"command-name": self.add_contact} #to replace with actual command names and funcs
+        self.history = [command for command in self.commands]
 
     def add_contact(self):
         pass
