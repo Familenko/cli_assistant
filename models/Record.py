@@ -16,8 +16,8 @@ class Record:
 
     def edit_phone(self, old_phone, new_phone):
         for phone in self.phones:
-            if phone.number == old_phone:
-                phone.number = new_phone
+            if phone.value == old_phone:
+                phone.value = new_phone
                 return
         raise ValueError("Old phone number not found")
 
@@ -43,14 +43,14 @@ class Record:
         self.emails.append(email)
 
     def edit_email(self, old_email, new_email):
-        for i, email in enumerate(self.emails):
-            if email == old_email:
-                self.emails[i] = new_email
+        for email in self.emails:
+            if email.value == old_email:
+                email.value = new_email
                 return
         raise ValueError("Old email not found")
 
     def delete_email(self, email):
-        self.emails = [e for e in self.emails if e != email]
+        self.emails = [e for e in self.emails if e.value != email]
 
     def add_notes(self, notes):
         pass
