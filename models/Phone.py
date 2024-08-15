@@ -1,4 +1,5 @@
 class Phone:
+    super().__init__(value)
     def __init__(self, value):
         self.value = self.validate_phone(value)
     
