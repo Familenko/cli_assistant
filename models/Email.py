@@ -5,6 +5,7 @@ class Email:
         self.value = self.validate_email(value)
     
     def validate_email(self, value):
+     super().__init__(value)
         if len(value) < 5:
             raise ValueError("The email address should be at least 5 characters long.")
         
