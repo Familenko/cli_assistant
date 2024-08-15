@@ -1,7 +1,15 @@
-class ChatBot:
+from models.Addressbook import Addressbook
+from models.Record import Record
+from models.Birthday import Birthday 
+from models.Email import Email 
+from models.Field import Field
+from models.Name import Name
+from models.Phone import Phone
+
+"""" class ChatBot:
     def __init__(self):
         self.commands = {"command-name": self.add_contact} #to replace with actual command names and funcs
-        self.history = [command for command in self.commands]
+        self.history = [command for command in self.commands] """
 
     def add_contact(args: list, book: AddressBook): 
         name, phone, email, *_ = args
