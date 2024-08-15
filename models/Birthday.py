@@ -1,4 +1,5 @@
 class Birthday:
+ super().__init__(value)
  def __init__(self, value):
         try:
             self.value = datetime.strptime(value, "%d.%m.%Y").date()
