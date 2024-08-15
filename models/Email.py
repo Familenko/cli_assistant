@@ -1,6 +1,7 @@
 import re
 
 class Email:
+    super().__init__(value)
     def __init__(self, value):
         self.value = self.validate_email(value)
     
