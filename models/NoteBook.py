@@ -18,17 +18,16 @@ class NoteBook(UserDict):
         note.rename(new_title)
         self.data[new_title] = self.data.pop(old_title)
 
-    def edit_note(self, title, text):
+    def edit_note(self, title, text: list[str]):
         note = self.find_note(title)
         if not note:
             raise ValueError("Note doesn't exist.")
         note.edit_note(text)
 
     def delete_note(self, title):
-        note = self.find_note(title)
-        if not note:
+        if not self.find_note(title):
             raise ValueError("Note doesn't exist.")
-        self.data.remove(note)
+        del self.data[title]
 
     def __str__(self):
         return "\n".join([str(note) for note in self.data.values()])

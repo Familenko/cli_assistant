@@ -9,8 +9,8 @@ class Note:
     def rename(self, new_title):
         self.title = Title(new_title)
 
-    def edit_note(self, content: list):
-        self.content = content
+    def edit_note(self, content: list[str]):
+        self.content = [Content(line) for line in content]
 
     def add_line(self, line):
         self.content.append(Content(line))
