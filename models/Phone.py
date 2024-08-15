@@ -3,6 +3,7 @@ class Phone:
         self.value = self.validate_phone(value)
     
     def validate_phone(self, value):
+        super().__init__(value)
         # checking "+" symbol
         if value.startswith('+'):
             # delete of "+" before checking whether number consists of 10 symbols
