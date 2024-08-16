@@ -1,7 +1,15 @@
 from collections import UserDict
 from datetime import datetime, timedelta
-from utils.telegram import send_telegram_message
 import pickle
+
+from utils.telegram import send_telegram_message
+from models.Record import Record
+from models.Name import Name
+from models.Phone import Phone
+from models.Birthday import Birthday
+from models.Adress import Adress
+from models.Email import Email
+
 
 class AddressBook(UserDict):
     def add_record(self, record):
@@ -39,16 +47,37 @@ class AddressBook(UserDict):
             send_telegram_message(message)
 
     def __getstate__(self):
-        """Метод для серіалізації."""
+        # to send a message about upcoming birthdays during saving
         self.check_for_birthday()
-        # Створюємо копію словника даних
-        state = self.data.copy()
+
+        state = {}
+        for name, record in self.data.items():
+            state[name] = {
+                'name': name,
+                'phones': [phone.value for phone in record.phones],
+                'birthday': record.birthday.value if record.birthday else None,
+                'address': record.address.value if record.address else None,
+                'email': [email.value for email in record.emails],
+            }
+
         return state
 
     def __setstate__(self, state):
-        """Метод для десеріалізації."""
-        self.data = state
+        # to send a message about upcoming birthdays during loading
         self.check_for_birthday()
+
+        self.data = state
+
+        self.data = {}
+        for name, record in state.items():
+            new_record = Record(name)
+            new_record.phones = [Phone(phone) for phone in record['phones'] if phone]
+            new_record.birthday = Birthday(record['birthday']) if record['birthday'] else None
+            new_record.address = Adress(record['address']) if record['address'] else None
+            new_record.emails = [Email(email) for email in record['email'] if email]
+            new_record.name = Name(name)
+
+            self.data[name] = new_record
 
     def save_to_file(self, filename):
         """Зберігає адресну книгу у файл."""
