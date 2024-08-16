@@ -1,8 +1,11 @@
 import re
+from models.Field import Field
 
-class Email:
+
+class Email(Field):
     def __init__(self, value):
-        self.value = self.validate_email(value)
+        value = self.validate_email(value)
+        super().__init__(value)
     
     def validate_email(self, value):
         if len(value) < 5:

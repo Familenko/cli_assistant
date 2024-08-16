@@ -1,6 +1,10 @@
-class Phone:
+from models.Field import Field
+
+
+class Phone(Field):
     def __init__(self, value):
-        self.value = self.validate_phone(value)
+        value = self.validate_phone(value)
+        super().__init__(value)
     
     def validate_phone(self, value):
         # checking "+" symbol
