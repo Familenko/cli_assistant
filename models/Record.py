@@ -1,6 +1,7 @@
 from models.Name import Name
 from models.Phone import Phone
 from models.Birthday import Birthday
+from models.Adress import Adress
 
 
 class Record:
@@ -10,6 +11,7 @@ class Record:
         self.birthday = None
         self.emails = []
         self.notes = []
+        self.address = None
 
     def add_phone(self, phone):
         self.phones.append(Phone(phone))
@@ -52,11 +54,15 @@ class Record:
     def delete_email(self, email):
         self.emails = [e for e in self.emails if e.value != email]
 
-    def add_notes(self, notes):
-        pass
+    def add_address(self, address):
+        self.address = Adress(address)
 
-    def edit_notes(self, notes):
-        pass
+    def edit_address(self, new_address):
+        if not self.address:
+            raise ValueError("Address does not exist")
+        self.address = Adress(new_address)
 
-    def delete_notes(self, notes):
-        pass
+    def delete_address(self):
+        if not self.address:
+            raise ValueError("Address does not exist")
+        self.address = None
