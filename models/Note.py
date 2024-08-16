@@ -22,4 +22,4 @@ class Note:
         self.content[line_number] = Content(new_line)
 
     def __str__(self):
-        return f"Title: {self.title.value}\nText:" + ("(note appears to be empty)" if not self.content else "\n" + "\n".join(line.value for line in self.content))
+        return f"Title: {self.title.value}\nText: " + ("(note appears to be empty)" if not self.content else "\n" + "\n".join(line.value for line in self.content))
