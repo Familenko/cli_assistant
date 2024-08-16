@@ -1,23 +1,28 @@
 from collections import UserDict
 from datetime import datetime, timedelta
 from utils.telegram import send_telegram_message
-
+import pickle
 
 class AddressBook(UserDict):
-    def add_record(self):
-        pass
+    def add_record(self, record):
+        """Додає новий запис до адресної книги."""
+        self.data[record.name.value] = record
 
-    def find_record(self):
-        pass
+    def find_record(self, name):
+        """Знаходить запис за ім'ям."""
+        return self.data.get(name)
 
-    def delete_record(self):
-        pass
+    def delete_record(self, name):
+        """Видаляє запис за ім'ям."""
+        if name in self.data:
+            del self.data[name]
+            return True
+        return False
 
     def get_upcoming_birthdays(self, days: int = 7):
         today = datetime.now().date()
         deadline = today + timedelta(days=days)
         upcoming_birthdays = []
-
         for record in self.data.values():
             if record.birthday:
                 birthday = datetime.strptime(record.birthday.value, "%d.%m.%Y").date()
@@ -34,9 +39,24 @@ class AddressBook(UserDict):
             send_telegram_message(message)
 
     def __getstate__(self):
+        """Метод для серіалізації."""
         self.check_for_birthday()
-        # TODO: подальша логіка для серіалізації
+        # Створюємо копію словника даних
+        state = self.data.copy()
+        return state
 
     def __setstate__(self, state):
+        """Метод для десеріалізації."""
+        self.data = state
         self.check_for_birthday()
-        # TODO: подальша логіка для серіалізації
+
+    def save_to_file(self, filename):
+        """Зберігає адресну книгу у файл."""
+        with open(filename, 'wb') as file:
+            pickle.dump(self, file)
+
+    @classmethod
+    def load_from_file(cls, filename):
+        """Завантажує адресну книгу з файлу."""
+        with open(filename, 'rb') as file:
+            return pickle.load(file)
