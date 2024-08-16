@@ -195,5 +195,4 @@ class ChatBot:
                 return pickle.load(f)
         except FileNotFoundError:
             return AddressBook()
-
-print(ChatBot.__dict__)
+        
