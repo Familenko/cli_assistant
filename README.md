@@ -33,7 +33,8 @@ The main goal of this project was to create a system that allows users to intera
 
 To start working with the chatbot, clone the Repository:
 
-```git clone https://github.com/yourusername/cli_assistant.git cd cli_assistant```
+```git clone https://github.com/yourusername/cli_assistant.git```
+```pip install requirements.txt```
 
 # Usage
 To launch the chatbot, simply run the run.py script:
@@ -72,7 +73,7 @@ The bot will guide you through the available commands. Below is a list of core c
 - *Search notes by tag:*
 ```search_notes "#shopping"```
 
+P.S. More example you may find in file test.py
+
 # Contribution
 Feel free to fork this project, make your changes, and submit a pull request. We welcome contributions that help improve the functionality and user experience.
-
-

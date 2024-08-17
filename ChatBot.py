@@ -36,6 +36,10 @@ class ChatBot:
             "delete-birthday": self.delete_birthday,
             "find-closest-birthday": self.find_closest_birthday,
 
+            "add-address": self.add_address,
+            "edit-address": self.edit_address,
+            "delete-address": self.delete_address,
+
             "find-note": self.find_note,
             "add-note": self.add_note,
             "show-notes": self.show_all_notes,
@@ -168,6 +172,31 @@ class ChatBot:
         else:
             print(f"Contact name {name} not found in contacts")
 
+    def add_address(self, *args):
+        name, address, *_ = args
+        record = self.book.find_record(name)
+        if record:
+            record.add_address(address)
+            print(f"Address added for {name}")
+        else:
+            print(f"Contact name {name} not found in contacts")
+
+    def edit_address(self, *args):
+        name, new_address, *_ = args
+        if self.book[name].address:
+            self.book[name].edit_address(new_address)
+            print(f"Address updated for contact {name}")
+        else:
+            print(f"Contact name {name} not found in contacts")
+
+    def delete_address(self, *args):
+        name, *_ = args
+        if self.book.find_record(name):
+            self.book[name].address = None
+            print(f"Address deleted")
+        else:
+            print(f"Contact name {name} not found in contacts")
+
     def find_contact(self, *args):
         name, *_ = args
         record = self.book.find_record(name)
@@ -246,11 +275,10 @@ class ChatBot:
 
     def search_notes_by_tag(self, *args):
         tag, *_ = args
-        notes = self.notebook.tags.search_notes_by_tag(tag)
+        notes = self.notebook.tags.get_notes_by_tag(tag)
         if notes:
             for note in notes:
                 print(note)
-                print("Tags: " + (", ".join(self.notebook.tags.get_tags_for_note(note.title.value)) or "(no tags assigned)"))
         else:
             print("(no notes found)")
 

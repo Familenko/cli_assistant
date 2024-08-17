@@ -56,6 +56,8 @@ class Record:
         self.emails = [e for e in self.emails if e.value != email]
 
     def add_address(self, address):
+        if self.address:
+            raise ValueError("Address already exists")
         self.address = Adress(address)
 
     def edit_address(self, new_address):
