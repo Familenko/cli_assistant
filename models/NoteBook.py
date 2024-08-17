@@ -69,15 +69,3 @@ class NoteBook(UserDict):
             new_note = Note(title)
             new_note.content = Content(content)
             self.data[title] = new_note
-
-    def save_to_file(self, filename = "notes.pkl"):
-        with open(filename, 'wb') as file:
-            pickle.dump(self, file)
-
-    @classmethod
-    def load_from_file(cls, filename = "notes.pkl"):
-        try:
-            with open(filename, 'rb') as file:
-                return pickle.load(file)
-        except FileNotFoundError:
-            return cls

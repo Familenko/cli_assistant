@@ -78,17 +78,3 @@ class AddressBook(UserDict):
             new_record.name = Name(name)
 
             self.data[name] = new_record
-
-    def save_to_file(self, filename = 'address_book.pkl'):
-        """Зберігає адресну книгу у файл."""
-        with open(filename, 'wb') as file:
-            pickle.dump(self, file)
-
-    @classmethod
-    def load_from_file(cls, filename = 'address_book.pkl'):
-        """Завантажує адресну книгу з файлу."""
-        try:
-            with open(filename, 'rb') as file:
-                return pickle.load(file)
-        except FileNotFoundError:
-            return cls()

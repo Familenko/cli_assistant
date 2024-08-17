@@ -14,9 +14,8 @@ from models.NoteBook import NoteBook
 
 
 class ChatBot:
-    def __init__(self, notes_file="notes.pkl", address_file="address_book.pkl"):
-        self.book = AddressBook.load_from_file(address_file)
-        self.notebook = NoteBook.load_from_file(notes_file)
+    def __init__(self):
+        self.book, self.notebook = self.load_data()
 
         self.commands = {
             "add-contact": self.add_contact,
@@ -52,8 +51,23 @@ class ChatBot:
         
         self.history = [command for command in self.commands]
 
-    def add_contact(self, *args): 
-        name, phone, email, birthday, address, *_ = args
+    def add_contact(self, *args):
+        match len(args):
+            case 1:
+                name, *_ = args
+                phone, email, birthday, address = None, None, None, None
+            case 2:
+                name, phone, *_ = args
+                email, birthday, address = None, None, None
+            case 3:
+                name, phone, email, *_ = args
+                birthday, address = None, None
+            case 4:
+                name, phone, email, birthday, *_ = args
+                address = None
+            case 5:
+                name, phone, email, birthday, address, *_ = args
+
         record = self.book.find_record(name)
         if not record:
             record = Record(name)
@@ -161,14 +175,14 @@ class ChatBot:
         table_data = [data]
         print(tabulate(table_data, headers="keys", tablefmt="grid"))
 
-    def show_contacts(self, _):
+    def show_contacts(self):
         table_data = list()
         for record in self.book.values():
             table_data.append({str(k):str(v) for k, v in record.__dict__.items() if k != "notes"})
 
         print(tabulate(table_data, headers="keys", tablefmt="grid"))
 
-    def find_closest_birthday(self, _):
+    def find_closest_birthday(self):
         birthdays = self.book.get_upcoming_birthdays()
         table_data = list()
         headers = ["Name", "Birthday"]
@@ -189,14 +203,14 @@ class ChatBot:
             raise ValueError("Note doesn't exist.")
         print(note)
         print("Tags: " + (", ".join(self.notebook.tags.get_tags_for_note(note.title.value)) or "(no tags assigned)"))
-                
-    def show_all_notes(self, _):
+      
+    def show_all_notes(self):
         print(self.notebook)
 
     def rename_note(self, *args):
         old_title, new_title, *_ = args
         self.notebook.rename_note(old_title, new_title)
-                
+
     def edit_note(self, *args):
         title, *_ = args
         note = self.notebook.find_note(title)
@@ -227,7 +241,7 @@ class ChatBot:
         else:
             print("(no notes found)")
 
-    def sort_notes_by_tags(self, _):
+    def sort_notes_by_tags(self):
         sorted_titles = self.notebook.tags.sort_notes_by_tags(self.notebook.keys())
         if sorted_titles:
             for title in sorted_titles:
@@ -236,3 +250,25 @@ class ChatBot:
                 print("Tags: " + (", ".join(self.notebook.tags.get_tags_for_note(note.title.value)) or "(no tags assigned)"))
         else:
             print("(notebook appears to be empty)")
+
+    def save_data(self, addressbook_file="addressbook.pkl", notebook_file="notebook.pkl"):
+        with open(addressbook_file, 'wb') as file:
+            pickle.dump(self.book, file)
+
+        with open(notebook_file, 'wb') as file:
+            pickle.dump(self.notebook, file)
+
+    def load_data(self, addressbook_file="addressbook.pkl", notebook_file="notebook.pkl"):
+        try:
+            with open(addressbook_file, "rb") as f:
+                book = pickle.load(f)
+        except FileNotFoundError:
+            book = AddressBook()
+
+        try:
+            with open(notebook_file, "rb") as f:
+                notebook = pickle.load(f)
+        except FileNotFoundError:
+            notebook = NoteBook()
+
+        return book, notebook

@@ -1,3 +1,4 @@
+from colorama import Fore, Style
 from prompt_toolkit import prompt
 from prompt_toolkit.completion import FuzzyWordCompleter
 from prompt_toolkit.key_binding import KeyBindings
@@ -5,10 +6,11 @@ from prompt_toolkit.filters import (
     has_completions,
     completion_is_selected,
 )
+
 from ChatBot import ChatBot
 
 
-def user_input(user_input):
+def input_hendler(user_input):
     try:
         command, *args = user_input.lower().split()
         return command, args
@@ -35,14 +37,18 @@ def main():
             key_bindings=key_bindings,
         )
         
-        command, args = user_input(user_input)
+        command, args = input_hendler(user_input)
         if not command:
             print("Invalid command")
             continue
-
         else:
             if command in bot.commands:
-                bot.commands[command](args)
+                try:
+                    bot.commands[command](*args)
+                except Exception as e:
+                    print(e)
+                    continue
+            
                 
             if user_input == 'q':
                 bot.notebook.save_to_file()
