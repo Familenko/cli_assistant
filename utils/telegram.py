@@ -1,5 +1,8 @@
 import requests
-from credentials import TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID
+
+
+TELEGRAM_BOT_TOKEN = '7353444926:AAFoIaBpjV_w_0BFAfP3jzA-cyQOFFupaJw'
+TELEGRAM_CHAT_ID = '484955140'
 
 
 def send_telegram_message(

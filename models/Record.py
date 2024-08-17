@@ -2,6 +2,7 @@ from models.Name import Name
 from models.Phone import Phone
 from models.Birthday import Birthday
 from models.Adress import Adress
+from models.Email import Email
 
 
 class Record:
@@ -42,7 +43,7 @@ class Record:
         self.birthday = None
 
     def add_email(self, email):
-        self.emails.append(email)
+        self.emails.append(Email(email))
 
     def edit_email(self, old_email, new_email):
         for email in self.emails:
@@ -55,6 +56,8 @@ class Record:
         self.emails = [e for e in self.emails if e.value != email]
 
     def add_address(self, address):
+        if self.address:
+            raise ValueError("Address already exists")
         self.address = Adress(address)
 
     def edit_address(self, new_address):
