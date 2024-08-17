@@ -13,31 +13,16 @@ from models.Email import Email
 
 class AddressBook(UserDict):
     def add_record(self, record):
-        """Додає новий запис до адресної книги."""
         self.data[record.name.value] = record
 
     def find_record(self, name):
-        """Знаходить запис за ім'ям."""
         return self.data.get(name)
 
     def delete_record(self, name):
-        """Видаляє запис за ім'ям."""
         if name in self.data:
             del self.data[name]
             return True
         return False
-
-    # def get_upcoming_birthdays(self, days: int = 7):
-    #     today = datetime.now().date()
-    #     deadline = today + timedelta(days=days)
-    #     upcoming_birthdays = []
-    #     for record in self.data.values():
-    #         if record.birthday:
-    #             birthday = record.birthday.value
-    #             birthday = birthday.replace(year=today.year)
-    #             if today <= birthday <= deadline:
-    #                 upcoming_birthdays.append(record)
-    #     return upcoming_birthdays
     
     def get_upcoming_birthdays(self, days: int = 7):
         today = datetime.now().date()
