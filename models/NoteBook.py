@@ -4,6 +4,7 @@ from models.Content import Content
 from models.Note import Note
 from models.Tags import Tags
 
+
 class NoteBook(UserDict):
     def __init__(self):
         super().__init__(self)
@@ -69,14 +70,14 @@ class NoteBook(UserDict):
             new_note.content = Content(content)
             self.data[title] = new_note
 
-    def save_to_file(self, filename = "dump.pkl"):
+    def save_to_file(self, filename = "notes.pkl"):
         with open(filename, 'wb') as file:
             pickle.dump(self, file)
 
     @classmethod
-    def load_from_file(cls, filename = "dump.pkl"):
+    def load_from_file(cls, filename = "notes.pkl"):
         try:
             with open(filename, 'rb') as file:
                 return pickle.load(file)
         except FileNotFoundError:
-            return NoteBook()
+            return cls

@@ -9,65 +9,73 @@ from models.Birthday import Birthday
 from models.Email import Email 
 from models.Phone import Phone
 from models.Email import Email
+from models.AddressBook import AddressBook
+from models.NoteBook import NoteBook
+
 
 class ChatBot:
-    def __init__(self, book: AddressBook = AddressBook(), notebook = NoteBook.load_from_file()):
-        self.book = book
-        self.notebook = notebook
-        self.commands = {"add": self.add_contact,
-                "add-phone": self.add_phone,
-                "change-phone": self.edit_phone,
-                "add-email": self.add_email,
-                "change-email": self.edit_email,
-                "delete": self.delete_contact,
-                "delete-phone": self.delete_phone,
-                "delete-email": self.delete_email,
-                "add-birthday": self.add_birthday,
-                "edit-birthday": self.edit_birthday,
-                "delete-birthday": self.delete_birthday,
-                "show": self.find_contact,
-                "all": self.show_contacts,
-                "birthdays": self.find_closest_birthday,
-                "add-note": self.add_note,
-                "show-note": self.show_note,
-                "show-all-notes": self.show_all_notes,
-                "rename-note": self.rename_note,
-                "edit-note": self.edit_note,
-                "delete-note": self.delete_note,
-                "add-tag-to-note": self.add_tag_to_note,
-                "remove-tag-from-note": self.remove_tag_from_note,
-                "search-notes-by-tag": self.search_notes_by_tag,
-                "sort-notes-by-tags": self.sort_notes_by_tags,
-                }
+    def __init__(self, notes_file="notes.pkl", address_file="address_book.pkl"):
+        self.book = AddressBook.load_from_file(address_file)
+        self.notebook = NoteBook.load_from_file(notes_file)
+
+        self.commands = {
+            "add-contact": self.add_contact,
+            "delete-contact": self.delete_contact,
+            "find-contact": self.find_contact,
+            "show-contacts": self.show_contacts,
+
+            "add-phone": self.add_phone,
+            "edit-phone": self.edit_phone,
+            "delete-phone": self.delete_phone,
+
+            "add-email": self.add_email,
+            "delete-email": self.delete_email,
+            "edit-email": self.edit_email,
+
+            "add-birthday": self.add_birthday,
+            "edit-birthday": self.edit_birthday,
+            "delete-birthday": self.delete_birthday,
+            "find-closest-birthday": self.find_closest_birthday,
+
+            "find-note": self.find_note,
+            "add-note": self.add_note,
+            "show-notes": self.show_all_notes,
+            "rename-note": self.rename_note,
+            "edit-note": self.edit_note,
+            "delete-note": self.delete_note,
+
+            "add-tag-to-note": self.add_tag_to_note,
+            "remove-tag-from-note": self.remove_tag_from_note,
+            "search-notes-by-tag": self.search_notes_by_tag,
+            "sort-notes-by-tags": self.sort_notes_by_tags,
+            }
+        
         self.history = [command for command in self.commands]
 
-    def add_contact(self, args: list): 
-         #add John 1234567890 example@email.com 20.08.2000
-        name, phone, email, birthday, *_ = args
+    def add_contact(self, *args): 
+        name, phone, email, birthday, address, *_ = args
         record = self.book.find_record(name)
         if not record:
             record = Record(name)
             record.add_phone(phone) if phone else None
             record.add_email(email) if email else None
             record.add_birthday(birthday) if birthday else None
+            record.add_address(address) if address else None
             self.book.add_record(record)
             print(f"Contact {name} added")
         else: 
-            return record
+            print(f"Contact {name} already exists")
 
-    def add_phone(self, args):
-        #add-phone John 1234567890
+    def add_phone(self, *args):
         name, phone, *_ = args
         record = self.book.find_record(name)
-        if not record:
-            record = Record(name)
+        if record:
             record.add_phone(phone)
-            self.book.add_record(record)
-        else: self.book[name].add_phone(phone)
-        print(f"Phone number added for {name}")
+            print(f"Phone number added for {name}")
+        else:
+            print(f"Contact name {name} not found in contacts")
         
-    def edit_phone(self, args):   
-        #change-phone John 2223334441 5553334440
+    def edit_phone(self, *args):   
         name, old_phone, new_phone, *_ = args                          
         record = self.book.find_record(name)
         if record:
@@ -76,19 +84,16 @@ class ChatBot:
         else: 
             print(f"Contact name {name} not found in contacts")
 
-    def add_email(self, args):
-        #add-email John example@ex.com
+    def add_email(self, *args):
         name, email, *_ = args
         record = self.book.find_record(name)
-        if not record:
-            record = Record(name)
+        if record:
             record.add_email(email)
-            self.book.add_record(record)
-        else: self.book[name].add_email(email) 
-        print(f"Email added for {name}")
+            print(f"Email added for {name}")
+        else:
+            print(f"Contact name {name} not found in contacts")
         
-    def edit_email(self, args):
-        #change-email John example@example.com test@test.com
+    def edit_email(self, *args):
         name, old_email, new_email, *_ = args
         record = self.book.find_record(name)
         if record:
@@ -97,62 +102,51 @@ class ChatBot:
         else: 
             print(f"Contact name {name} not found in contacts")
 
-    def delete_contact(self, args):
-        #delete John
+    def delete_contact(self, *args):
         name, *_ = args
-        if name not in self.data:
-            print(f"Contact name {name} not found in contacts")
-        else:
+        record = self.book.find_record(name)
+        if record:
             self.book.delete_record(name)
-            print("Contact deleted")       
+            print(f"Contact {name} deleted")
+        else:
+            print(f"Contact name {name} not found in contacts")  
 
-    def delete_phone(self, args: list):
-        #delete-phone John 1234567888
+    def delete_phone(self, *args):
         name, phone, *_ = args
         record = self.book.find_record(name)
-        if not record:
-            print(f"Contact name {name} not found in contacts")
+        if record:
+            record.delete_phone(phone)
+            print(f"Phone number deleted for {name}")
         else:
-            if phone in self.book[name].phones:
-                self.book[name].delete_phone(phone) #поки що так
-                print(f"Phone {phone} deleted for contact {name}")
-            else:
-                print("Phone number not found in contacts list")
+            print(f"Contact name {name} not found in contacts")
        
-    def delete_email(self, args: list):
-        # delete John ex@example.com
+    def delete_email(self, *args):
         name, email, *_ = args
-        if not self.book.find_record(name):
-            print(f"Contact name {name} not found in contacts")
+        record = self.book.find_record(name)
+        if record:
+            record.delete_email(email)
+            print(f"Email deleted for {name}")
         else:
-            if email in self.book[name].emails:
-                self.book[name].delete_email(email) 
-                print(f"Email {email} deleted for contact {name}")
-            else:
-                print("Email not found in contacts list")
+            print(f"Contact name {name} not found in contacts")
          
-    def add_birthday(self, args):
-        # add-birthday John 10.10.2000
+    def add_birthday(self, *args):
         name, birthday, *_ = args
-        if not self.book.find_record(name):
-            print(f"Contact name {name} not found in contacts")
-        if self.book[name].birthday:
-            self.book[name].edit_birthday(birthday)
-        else:
-            self.book[name].add_birthday(birthday)
+        record = self.book.find_record(name)
+        if record:
+            record.add_birthday(birthday)
             print(f"Birthday added for {name}")
+        else:
+            print(f"Contact name {name} not found in contacts")
 
-    def edit_birthday(self, args):
-        # edit-birthday John 21.10.1999
+    def edit_birthday(self, *args):
         name, new_birthday, *_ = args
         if self.book[name].birthday:
             self.book[name].edit_birthday(new_birthday)
+            print(f"Birthday updated for contact {name}")
         else:
-            self.book[name].add_birthday(new_birthday)
-        print(f"Birthday updated for contact {name}")
+            print(f"Contact name {name} not found in contacts")
    
-    def delete_birthday(self, args: list):
-        # delete-birthday John
+    def delete_birthday(self, *args):
         name, *_ = args
         if self.book.find_record(name):
             self.book[name].birthday = None
@@ -160,48 +154,35 @@ class ChatBot:
         else:
             print(f"Contact name {name} not found in contacts")
 
-    def find_contact(self, args):
-        #show John
+    def find_contact(self, *args):
         name, *_ = args
-        record = self.book.find_record(name)
         record = self.book.find_record(name).__dict__
         data = {str(k):str(v) for k, v in record.items() if k!="notes"}
-        table_data = list()
-        table_data.append(data)
+        table_data = [data]
         print(tabulate(table_data, headers="keys", tablefmt="grid"))
-#TO_REMOVE IF TABLE WORKS CORRECTLY:
-        # for name, values in record.__dict__.items():
-        #     print(str(name), str(values))
 
-    def show_contacts(self):
-        # #command: all
+    def show_contacts(self, _):
         table_data = list()
         for record in self.book.values():
-            table_data.append({str(k):str(v) for k, v in record.__dict__.items() if k!="notes"})
+            table_data.append({str(k):str(v) for k, v in record.__dict__.items() if k != "notes"})
+
         print(tabulate(table_data, headers="keys", tablefmt="grid"))
-#TO_REMOVE IF TABLE WORKS CORRECTLY:
-        # for record in self.book.values():
-        #     for name, values in record.__dict__.items():
-        #         print(f"{str(name)}: {str(values)} ", end = '')
-        #     print("")
-    def find_closest_birthday(self):
-        #command: birthdays
+
+    def find_closest_birthday(self, _):
         birthdays = self.book.get_upcoming_birthdays()
         table_data = list()
         headers = ["Name", "Birthday"]
-        for birthday in birthdays:
-            table_data.append((birthday.name, birthday.birthday))
-        print(tabulate(table_data, headers=headers, tablefmt="grid"))
-#TO-REMOVE IF TABLE WORKS CORRECTLY:
-        # birthdays = self.book.get_upcoming_birthdays()
-        # for birthday in birthdays:
-        #     print(birthday.name, birthday.birthday)
+        for man in birthdays:
+            table_data.append((man.name, man.birthday))
 
-    def add_note(self, args):
+        print(tabulate(table_data, headers=headers, tablefmt="grid"))
+        self.book.check_for_birthday()
+
+    def add_note(self, *args):
         title, *_ = args
         self.notebook.add_note(title)
                 
-    def show_note(self, args):
+    def find_note(self, *args):
         title, *_ = args
         note = self.notebook.find_note(title)
         if not note:
@@ -209,14 +190,14 @@ class ChatBot:
         print(note)
         print("Tags: " + (", ".join(self.notebook.tags.get_tags_for_note(note.title.value)) or "(no tags assigned)"))
                 
-    def show_all_notes(self, args):
+    def show_all_notes(self, _):
         print(self.notebook)
 
-    def rename_note(self, args):
+    def rename_note(self, *args):
         old_title, new_title, *_ = args
         self.notebook.rename_note(old_title, new_title)
                 
-    def edit_note(self, args):
+    def edit_note(self, *args):
         title, *_ = args
         note = self.notebook.find_note(title)
         if not note:
@@ -224,30 +205,29 @@ class ChatBot:
         content = prompt(f"Editing note '{title}'. Press (Alt+Enter) to finish editing:\n", multiline=True, default=note.content.value)
         note.edit_note(content)
 
-    def delete_note(self, args):
+    def delete_note(self, *args):
         title, *_ = args
         self.notebook.delete_note(title)
 
-    def add_tag_to_note(self, args):
+    def add_tag_to_note(self, *args):
         title, tag, *_ = args
         self.notebook.add_tag(title, tag)
 
-    def remove_tag_from_note(self, args):
+    def remove_tag_from_note(self, *args):
         title, tag, *_ = args
         self.notebook.remove_tag(title, tag)
 
-    def search_notes_by_tag(self, args):
+    def search_notes_by_tag(self, *args):
         tag, *_ = args
-        titles = self.notebook.tags.get_notes_by_tag(tag)
-        if titles:
-            for title in titles:
-                args = []
-                args.append(title)
-                self.show_note(args)
+        notes = self.notebook.tags.search_notes_by_tag(tag)
+        if notes:
+            for note in notes:
+                print(note)
+                print("Tags: " + (", ".join(self.notebook.tags.get_tags_for_note(note.title.value)) or "(no tags assigned)"))
         else:
-            print("(no notes found by tag)")
+            print("(no notes found)")
 
-    def sort_notes_by_tags(self, args):
+    def sort_notes_by_tags(self, _):
         sorted_titles = self.notebook.tags.sort_notes_by_tags(self.notebook.keys())
         if sorted_titles:
             for title in sorted_titles:
@@ -256,17 +236,3 @@ class ChatBot:
                 print("Tags: " + (", ".join(self.notebook.tags.get_tags_for_note(note.title.value)) or "(no tags assigned)"))
         else:
             print("(notebook appears to be empty)")
-
-    @staticmethod
-    def save_data(filename: str, book: AddressBook = AddressBook()):
-        with open(filename, "wb") as f:
-            pickle.dump(book, f)
-
-    @staticmethod
-    def load_data(filename: str):
-        try:
-            with open(filename, "rb") as f:
-                return pickle.load(f)
-        except FileNotFoundError:
-            return AddressBook()
-        

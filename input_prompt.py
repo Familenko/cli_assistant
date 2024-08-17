@@ -7,6 +7,15 @@ from prompt_toolkit.filters import (
 )
 from ChatBot import ChatBot
 
+
+def user_input(user_input):
+    try:
+        command, *args = user_input.lower().split()
+        return command, args
+    except:
+        return False, False
+
+
 def main():
     key_bindings = KeyBindings()
     filter = has_completions & ~completion_is_selected
@@ -20,16 +29,22 @@ def main():
 
     while True:
         completer = FuzzyWordCompleter(history)
-        user_input = prompt("Enter command: ",
+        user_input = prompt("Enter command or press 'q' to quit: ",
             completer=completer,
             complete_while_typing=True,
             key_bindings=key_bindings,
         )
-        command, *args = user_input.lower().split() #to replace with parse_input() func
+        
+        command, args = user_input(user_input)
+        if not command:
+            print("Invalid command")
+            continue
 
-        if command in bot.commands:
-            bot.commands[command](args)
-            
-        if user_input == 'q':
-            bot.notebook.save_to_file()
-            break
+        else:
+            if command in bot.commands:
+                bot.commands[command](args)
+                
+            if user_input == 'q':
+                bot.notebook.save_to_file()
+                bot.book.save_to_file()
+                break
