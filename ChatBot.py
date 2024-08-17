@@ -1,7 +1,9 @@
 import pickle
+from prompt_toolkit import prompt
 from tabulate import tabulate
 
 from models.AddressBook import AddressBook
+from models.NoteBook import NoteBook
 from models.Record import Record
 from models.Birthday import Birthday 
 from models.Email import Email 
@@ -9,8 +11,9 @@ from models.Phone import Phone
 from models.Email import Email
 
 class ChatBot:
-    def __init__(self, book: AddressBook = AddressBook()):
+    def __init__(self, book: AddressBook = AddressBook(), notebook = NoteBook.load_from_file()):
         self.book = book
+        self.notebook = notebook
         self.commands = {"add": self.add_contact,
                 "add-phone": self.add_phone,
                 "change-phone": self.edit_phone,
@@ -25,9 +28,17 @@ class ChatBot:
                 "show": self.find_contact,
                 "all": self.show_contacts,
                 "birthdays": self.find_closest_birthday,
-                "add-note": self.add_notes,
-                "edit-note": self.edit_notes,
-                "delete-note": self.delete_notes}
+                "add-note": self.add_note,
+                "show-note": self.show_note,
+                "show-all-notes": self.show_all_notes,
+                "rename-note": self.rename_note,
+                "edit-note": self.edit_note,
+                "delete-note": self.delete_note,
+                "add-tag-to-note": self.add_tag_to_note,
+                "remove-tag-from-note": self.remove_tag_from_note,
+                "search-notes-by-tag": self.search_notes_by_tag,
+                "sort-notes-by-tags": self.sort_notes_by_tags,
+                }
         self.history = [command for command in self.commands]
 
     def add_contact(self, args: list): 
@@ -186,20 +197,65 @@ class ChatBot:
         # for birthday in birthdays:
         #     print(birthday.name, birthday.birthday)
 
-    def add_notes(self):
-        #command: add-note
-        #далі - текст ноута
-        #наразі add_notes() метод знаходиться в класі Record, де атрибут Name - 
-        #обов'язковий, а для ноутів він нам не треба. Переробити
-        pass
+    def add_note(self, args):
+        title, *_ = args
+        self.notebook.add_note(title)
                 
-    def edit_notes(self):
-    
-        pass
+    def show_note(self, args):
+        title, *_ = args
+        note = self.notebook.find_note(title)
+        if not note:
+            raise ValueError("Note doesn't exist.")
+        print(note)
+        print("Tags: " + (", ".join(self.notebook.tags.get_tags_for_note(note.title.value)) or "(no tags assigned)"))
+                
+    def show_all_notes(self, args):
+        print(self.notebook)
 
-    def delete_notes(self):
-        #same as above
-        pass
+    def rename_note(self, args):
+        old_title, new_title, *_ = args
+        self.notebook.rename_note(old_title, new_title)
+                
+    def edit_note(self, args):
+        title, *_ = args
+        note = self.notebook.find_note(title)
+        if not note:
+            raise ValueError("Note doesn't exist.")
+        content = prompt(f"Editing note '{title}'. Press (Alt+Enter) to finish editing:\n", multiline=True, default=note.content.value)
+        note.edit_note(content)
+
+    def delete_note(self, args):
+        title, *_ = args
+        self.notebook.delete_note(title)
+
+    def add_tag_to_note(self, args):
+        title, tag, *_ = args
+        self.notebook.add_tag(title, tag)
+
+    def remove_tag_from_note(self, args):
+        title, tag, *_ = args
+        self.notebook.remove_tag(title, tag)
+
+    def search_notes_by_tag(self, args):
+        tag, *_ = args
+        titles = self.notebook.tags.get_notes_by_tag(tag)
+        if titles:
+            for title in titles:
+                args = []
+                args.append(title)
+                self.show_note(args)
+        else:
+            print("(no notes found by tag)")
+
+    def sort_notes_by_tags(self, args):
+        sorted_titles = self.notebook.tags.sort_notes_by_tags(self.notebook.keys())
+        if sorted_titles:
+            for title in sorted_titles:
+                note = self.notebook.find_note(title)
+                print(note)
+                print("Tags: " + (", ".join(self.notebook.tags.get_tags_for_note(note.title.value)) or "(no tags assigned)"))
+        else:
+            print("(notebook appears to be empty)")
 
     @staticmethod
     def save_data(filename: str, book: AddressBook = AddressBook()):

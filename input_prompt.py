@@ -6,8 +6,6 @@ from prompt_toolkit.filters import (
     completion_is_selected,
 )
 from ChatBot import ChatBot
-from Tags import Tags
-
 
 def main():
     key_bindings = KeyBindings()
@@ -28,15 +26,10 @@ def main():
             key_bindings=key_bindings,
         )
         command, *args = user_input.lower().split() #to replace with parse_input() func
-        if command == "search-notes":
-            notes_search = input("Give me a tag to search for the note: ")
-            if notes_search in Tags():
-                print()
 
         if command in bot.commands:
             bot.commands[command](args)
-
-        #TODO: add notes-search by tags/keywords
             
         if user_input == 'q':
+            bot.notebook.save_to_file()
             break
