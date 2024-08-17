@@ -1,4 +1,5 @@
 import pickle
+from tabulate import tabulate
 
 from models.AddressBook import AddressBook
 from models.Record import Record
@@ -152,21 +153,38 @@ class ChatBot:
         #show John
         name, *_ = args
         record = self.book.find_record(name)
-        for name, values in record.__dict__.items():
-            print(str(name), str(values))
+        record = self.book.find_record(name).__dict__
+        data = {str(k):str(v) for k, v in record.items() if k!="notes"}
+        table_data = list()
+        table_data.append(data)
+        print(tabulate(table_data, headers="keys", tablefmt="grid"))
+#TO_REMOVE IF TABLE WORKS CORRECTLY:
+        # for name, values in record.__dict__.items():
+        #     print(str(name), str(values))
 
     def show_contacts(self):
-        #command: all
-        for record in self.book.items():
-            for name, values in record.__dict__.items():
-                print(f"{str(name)}: {str(values)} ", end = '')
-            print("")
-
+        # #command: all
+        table_data = list()
+        for record in self.book.values():
+            table_data.append({str(k):str(v) for k, v in record.__dict__.items() if k!="notes"})
+        print(tabulate(table_data, headers="keys", tablefmt="grid"))
+#TO_REMOVE IF TABLE WORKS CORRECTLY:
+        # for record in self.book.values():
+        #     for name, values in record.__dict__.items():
+        #         print(f"{str(name)}: {str(values)} ", end = '')
+        #     print("")
     def find_closest_birthday(self):
         #command: birthdays
         birthdays = self.book.get_upcoming_birthdays()
+        table_data = list()
+        headers = ["Name", "Birthday"]
         for birthday in birthdays:
-            print(birthday.birthday)
+            table_data.append((birthday.name, birthday.birthday))
+        print(tabulate(table_data, headers=headers, tablefmt="grid"))
+#TO-REMOVE IF TABLE WORKS CORRECTLY:
+        # birthdays = self.book.get_upcoming_birthdays()
+        # for birthday in birthdays:
+        #     print(birthday.name, birthday.birthday)
 
     def add_notes(self):
         #command: add-note
