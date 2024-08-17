@@ -1,3 +1,4 @@
+import colorama
 from colorama import Fore, Style
 from prompt_toolkit import prompt
 from prompt_toolkit.completion import FuzzyWordCompleter
@@ -9,10 +10,11 @@ from prompt_toolkit.filters import (
 
 from ChatBot import ChatBot
 
+colorama.init(autoreset=True)
 
 def input_hendler(user_input):
     try:
-        command, *args = user_input.lower().split()
+        command, *args = user_input.split()
         return command, args
     except:
         return False, False
@@ -31,26 +33,25 @@ def main():
 
     while True:
         completer = FuzzyWordCompleter(history)
-        user_input = prompt("Enter command or press 'q' to quit: ",
+        message = "Enter command or press 'q' to quit: "
+        user_input = prompt(message,
             completer=completer,
             complete_while_typing=True,
             key_bindings=key_bindings,
         )
+
+        if user_input == 'q':
+            bot.save_data()
+            break
         
         command, args = input_hendler(user_input)
-        if not command:
-            print("Invalid command")
+        if not command or command not in bot.commands:
+            print(Fore.RED + "Invalid command")
             continue
         else:
             if command in bot.commands:
                 try:
                     bot.commands[command](*args)
                 except Exception as e:
-                    print(e)
+                    print(Fore.RED + f"Error: {e}")
                     continue
-            
-                
-            if user_input == 'q':
-                bot.notebook.save_to_file()
-                bot.book.save_to_file()
-                break

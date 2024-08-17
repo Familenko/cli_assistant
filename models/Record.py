@@ -2,6 +2,7 @@ from models.Name import Name
 from models.Phone import Phone
 from models.Birthday import Birthday
 from models.Adress import Adress
+from models.Email import Email
 
 
 class Record:
@@ -42,7 +43,7 @@ class Record:
         self.birthday = None
 
     def add_email(self, email):
-        self.emails.append(email)
+        self.emails.append(Email(email))
 
     def edit_email(self, old_email, new_email):
         for email in self.emails:

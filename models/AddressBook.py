@@ -27,15 +27,27 @@ class AddressBook(UserDict):
             return True
         return False
 
+    # def get_upcoming_birthdays(self, days: int = 7):
+    #     today = datetime.now().date()
+    #     deadline = today + timedelta(days=days)
+    #     upcoming_birthdays = []
+    #     for record in self.data.values():
+    #         if record.birthday:
+    #             birthday = record.birthday.value
+    #             birthday = birthday.replace(year=today.year)
+    #             if today <= birthday <= deadline:
+    #                 upcoming_birthdays.append(record)
+    #     return upcoming_birthdays
+    
     def get_upcoming_birthdays(self, days: int = 7):
         today = datetime.now().date()
         deadline = today + timedelta(days=days)
         upcoming_birthdays = []
         for record in self.data.values():
-            if record.birthday:
+            if hasattr(record, 'birthday') and record.birthday:
                 birthday = datetime.strptime(record.birthday.value, "%d.%m.%Y").date()
-                birthday = birthday.replace(year=today.year)
-                if today <= birthday <= deadline:
+                birthday_this_year = birthday.replace(year=today.year)
+                if today <= birthday_this_year <= deadline:
                     upcoming_birthdays.append(record)
         return upcoming_birthdays
 
@@ -63,9 +75,6 @@ class AddressBook(UserDict):
         return state
 
     def __setstate__(self, state):
-        # to send a message about upcoming birthdays during loading
-        self.check_for_birthday()
-
         self.data = state
 
         self.data = {}
@@ -78,3 +87,6 @@ class AddressBook(UserDict):
             new_record.name = Name(name)
 
             self.data[name] = new_record
+
+        # to send a message about upcoming birthdays during loading
+        self.check_for_birthday()

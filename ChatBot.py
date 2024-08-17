@@ -170,15 +170,28 @@ class ChatBot:
 
     def find_contact(self, *args):
         name, *_ = args
-        record = self.book.find_record(name).__dict__
-        data = {str(k):str(v) for k, v in record.items() if k!="notes"}
+        record = self.book.find_record(name)
+        data = {
+            "Name": record.name.value,
+            "Phones": ", ".join([phone.value for phone in record.phones]),
+            "Birthday": record.birthday.value if record.birthday else "",
+            "Emails": ", ".join([email.value for email in record.emails]),
+            "Address": record.address.value if record.address else ""
+        }
         table_data = [data]
         print(tabulate(table_data, headers="keys", tablefmt="grid"))
 
     def show_contacts(self):
-        table_data = list()
+        table_data = []
         for record in self.book.values():
-            table_data.append({str(k):str(v) for k, v in record.__dict__.items() if k != "notes"})
+            record_data = {
+                "Name": record.name.value,
+                "Phones": ", ".join([phone.value for phone in record.phones]),
+                "Birthday": record.birthday.value if record.birthday else "",
+                "Emails": ", ".join([email.value for email in record.emails]),
+                "Address": record.address.value if record.address else "",
+            }
+            table_data.append(record_data)
 
         print(tabulate(table_data, headers="keys", tablefmt="grid"))
 
