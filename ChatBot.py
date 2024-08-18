@@ -18,6 +18,8 @@ class ChatBot:
         self.book, self.notebook = self.load_data()
 
         self.commands = {
+            "help": self.help,
+
             "add-contact": self.add_contact,
             "delete-contact": self.delete_contact,
             "find-contact": self.find_contact,
@@ -54,6 +56,11 @@ class ChatBot:
             }
         
         self.history = [command for command in self.commands]
+
+    def help(self, *args):
+        print("Here is the list of available commands:")
+        for command in self.commands.keys():
+            print(command)
 
     def add_contact(self, *args):
         match len(args):

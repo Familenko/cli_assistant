@@ -1,4 +1,3 @@
-import pickle
 from collections import UserDict
 from models.Content import Content
 from models.Note import Note

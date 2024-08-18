@@ -12,13 +12,9 @@ from ChatBot import ChatBot
 
 colorama.init(autoreset=True)
 
-def input_hendler(user_input):
-    try:
-        command, *args = user_input.split()
-        return command, args
-    except:
-        return False, False
-
+def input_handler(user_input):
+    command, *args = user_input.split()
+    return command, args
 
 def main():
     key_bindings = KeyBindings()
@@ -33,7 +29,7 @@ def main():
 
     while True:
         completer = FuzzyWordCompleter(history)
-        message = "Enter command or press 'q' to quit: "
+        message = "Enter a command ('q' to quit, 'help' to get a list of available commands): "
         user_input = prompt(message,
             completer=completer,
             complete_while_typing=True,
@@ -44,7 +40,7 @@ def main():
             bot.save_data()
             break
         
-        command, args = input_hendler(user_input)
+        command, args = input_handler(user_input)
         if not command or command not in bot.commands:
             print(Fore.RED + "Invalid command")
             continue

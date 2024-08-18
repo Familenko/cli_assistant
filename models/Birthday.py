@@ -3,7 +3,7 @@ from models.Field import Field
 
 
 class Birthday(Field):
- def __init__(self, value):
+    def __init__(self, value):
         try:
             self.value = datetime.strptime(value, "%d.%m.%Y").date()
             super().__init__(value)

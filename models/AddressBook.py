@@ -1,13 +1,12 @@
 from collections import UserDict
 from datetime import datetime, timedelta
-import pickle
 
 from utils.telegram import send_telegram_message
 from models.Record import Record
 from models.Name import Name
 from models.Phone import Phone
 from models.Birthday import Birthday
-from models.Adress import Adress
+from models.Address import Address
 from models.Email import Email
 
 
@@ -67,7 +66,7 @@ class AddressBook(UserDict):
             new_record = Record(name)
             new_record.phones = [Phone(phone) for phone in record['phones'] if phone]
             new_record.birthday = Birthday(record['birthday']) if record['birthday'] else None
-            new_record.address = Adress(record['address']) if record['address'] else None
+            new_record.address = Address(record['address']) if record['address'] else None
             new_record.emails = [Email(email) for email in record['email'] if email]
             new_record.name = Name(name)
 
