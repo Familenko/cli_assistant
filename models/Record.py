@@ -1,7 +1,7 @@
 from models.Name import Name
 from models.Phone import Phone
 from models.Birthday import Birthday
-from models.Adress import Adress
+from models.Address import Address
 from models.Email import Email
 
 
@@ -58,12 +58,12 @@ class Record:
     def add_address(self, address):
         if self.address:
             raise ValueError("Address already exists")
-        self.address = Adress(address)
+        self.address = Address(address)
 
     def edit_address(self, new_address):
         if not self.address:
             raise ValueError("Address does not exist")
-        self.address = Adress(new_address)
+        self.address = Address(new_address)
 
     def delete_address(self):
         if not self.address:

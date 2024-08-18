@@ -1,8 +1,8 @@
 from models.Field import Field
 
 
-class Adress(Field):
- def __init__(self, value):
+class Address(Field):
+    def __init__(self, value):
         if value.isascii() and value.isalpha():
             super().__init__(value)
         else:
