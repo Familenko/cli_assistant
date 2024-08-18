@@ -27,13 +27,16 @@ The main goal of this project was to create a system that allows users to intera
 
 # Installation
 **1. Prerequisites**
-- Python 3.7 or later
+- Python 3.11 or later
   
 **2. Setup**
 
 To start working with the chatbot, clone the Repository:
 
-```git clone https://github.com/yourusername/cli_assistant.git```
+```https://github.com/Familenko/cli_assistant.git```
+
+Install requirements
+
 ```pip install requirements.txt```
 
 # Usage
@@ -58,22 +61,9 @@ The bot will guide you through the available commands. Below is a list of core c
 - *Sort Notes by Tags:* Organize notes by their associated tags.
 
 **Example Commands:**
-- *Add a new contact:*
-```add_contact "John Doe" "123 Main St" "+1234567890" "john@example.com" "1990-01-01"```
 
-- *Search for a contact by name:*
-```search_contact "John"```
-
-- *List contacts with birthdays in the next 7 days:*
-```upcoming_birthdays 7```
-
-- *Add a new note with a tag:*
-```add_note "Buy groceries" "#shopping"```
-
-- *Search notes by tag:*
-```search_notes "#shopping"```
-
-P.S. More example you may find in file test.py
+Example you may find in file test.py
+```https://github.com/Familenko/cli_assistant/blob/main/test.ipynb```
 
 # Contribution
 Feel free to fork this project, make your changes, and submit a pull request. We welcome contributions that help improve the functionality and user experience.
